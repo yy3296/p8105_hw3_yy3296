@@ -131,5 +131,16 @@ clean_accel_data =
     values_to = "activity_counts") 
 ```
 * Distribution
-* There are `r ncol(clean_accel_data)` variables in the dataset, which are `r colnames(clean_accel_data)`. 
-* There are `r nrow(clean_accel_data)` observations exists in the dataset. 
+  * There are `r ncol(clean_accel_data)` variables in the dataset, which are `r colnames(clean_accel_data)`. 
+  * There are `r nrow(clean_accel_data)` observations exists in the dataset. 
+  
+I aggregate across minutes to create a new variable clalled activity_whole_day to show the total activity for each day, and then I create a table showing these totals. 
+
+```{r}
+clean_accel_data %>%
+  group_by(week, day_id, day) %>%
+  summarize(activity_whole_day = sum(activity_counts)) %>%
+  knitr::kable()
+```
+
+* I don't think there are any trends apparent.
