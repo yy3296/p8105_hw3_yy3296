@@ -114,3 +114,22 @@ instacart %>%
   spread(key = order_dow, value = mean_hour) %>%
   knitr::kable(digits = 2)
 ```
+
+### Problem 2
+
+I load the accel dataset and tidy the data, including transform Monday-Sunday to Weekday or Weekend, and encode data with reasonable variable classes. 
+
+```{r}
+clean_accel_data =
+  read_csv("./dataset/accel_data (3).csv") %>%
+  janitor::clean_names() %>% 
+  mutate(
+    weekday_weekend = ifelse((day == "Monday"| day == "Tuesday"|day == "Wednesday"|day == "Thursday"| day == "Friday"), "Weekday", "Weekend")) %>%
+  pivot_longer(
+    activity_1:activity_1440,
+    names_to = "activity_minutes",
+    values_to = "activity_counts") 
+```
+* Distribution
+* There are `r ncol(clean_accel_data)` variables in the dataset, which are `r colnames(clean_accel_data)`. 
+* There are `r nrow(clean_accel_data)` observations exists in the dataset. 
