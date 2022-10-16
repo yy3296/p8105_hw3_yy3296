@@ -158,3 +158,57 @@ scale_x_continuous(
 
 * Distribution
   * For this plot, we can see the largest data appears between 1080th and 1200th minutes, and the smalles data appears before about 300th mimutes. 
+  
+### Problem 3
+
+load the data from the p8105.datasets
+
+```{r}
+library(p8105.datasets)
+data("ny_noaa")
+```
+
+* For this dataset, the size is `r nrow(ny_noaa)` rows * `r ncol(ny_noaa)` columns. 
+* All the variables are `r colnames(ny_noaa)`. 
+* This dataset lost a large number of data which means there are lots of NA in this data. 
+
+I do some data cleaning, and create separate variables for year, month, and day, and ensure observations for temperature, precipitation, and snowfall are given in reasonable units. 
+
+```{r}
+clean_ny_noaa = 
+  ny_noaa %>%
+  janitor::clean_names() %>% 
+  mutate(prcp = prcp/10,
+         snow = snow/100,
+         tmax = as.integer(tmax)/10,
+         tmin = as.integer(tmin)/10) %>%
+  separate(date, into = c("year", "month", "day"), sep = "-")
+```
+
+Find what are the most commonly observed values in snowfall.
+
+```{r}
+clean_ny_noaa %>%
+  count(snow)
+```
+
+By the result, we can see 0 is the most commonly observed values. Since n represent the frequency of each values, and we can see the time of 0 appear  is far outweighs than other values. 
+
+I make a two-panel plot showing the average max temperature in January and in July in each station across years. 
+
+```{r}
+clean_ny_noaa %>%
+  filter(month %in% c("01", "07")) %>%
+  group_by(id, month, year) %>% 
+  summarize(mean_tmax = mean(tmax, na.rm = TRUE)) %>%
+  ggplot(aes(x = year, y = mean_tmax, color = id)) + 
+  geom_point(size = 0.1, alpha = 0.5) + 
+  geom_path(alpha =  0.5) + 
+  theme(legend.position = "none") +
+  labs(x = "Year", y = "average max temperature", tile = "Average max temperature in January and in July in each station across years") + theme(axis.text.x = element_text(angle = 60, hjust = 1)) + 
+  facet_grid(. ~ month)
+```
+
+* Distribution
+  * By this plot, we can see that the overall temperature of July is higher than the overall temperature of January, and the temperature of July is about ten degrees higher than the temperature of January. 
+  * There are some outliers both for January and July. For example, for January 1982, the lowest temperature is lower than -10; for July 2004, the lowest temperature is lower than 20. 
