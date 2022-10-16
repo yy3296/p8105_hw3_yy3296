@@ -128,6 +128,7 @@ clean_accel_data =
   pivot_longer(
     activity_1:activity_1440,
     names_to = "activity_minutes",
+    names_prefix = "activity_",
     values_to = "activity_counts") 
 ```
 * Distribution
@@ -138,9 +139,22 @@ I aggregate across minutes to create a new variable clalled activity_whole_day t
 
 ```{r}
 clean_accel_data %>%
-  group_by(week, day_id, day) %>%
+  group_by(week, day) %>%
   summarize(activity_whole_day = sum(activity_counts)) %>%
   knitr::kable()
 ```
 
 * I don't think there are any trends apparent.
+
+I make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. 
+
+```{r}
+clean_accel_data %>%
+  mutate(activity_minutes = as.integer(activity_minutes)) %>%
+  ggplot(aes(x = activity_minutes, y = activity_counts, color = day)) + geom_point(alpha = 0.5) + labs(x = "activity minutes", y = "activity counts", title = "24-hour activity time courses for each day") + 
+scale_x_continuous(
+    breaks = seq(0, 1440, 120))
+```
+
+* Distribution
+  * For this plot, we can see the largest data appears between 1080th and 1200th minutes, and the smalles data appears before about 300th mimutes. 
